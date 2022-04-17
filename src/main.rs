@@ -1,3 +1,15 @@
-fn main() {
-    println!("Hello, world!");
+use sqlx::PgPool;
+use std::net::TcpListener;
+use zero2prod::configuration::get_configuration;
+use zero2prod::startup::run;
+
+#[tokio::main]
+async fn main() -> std::io::Result<()> {
+    let configuration = get_configuration().expect("failed to to read the configuration");
+    let connection = PgPool::connect(&configuration.database.connection_string())
+        .await
+        .expect("failed to connect to pgsql");
+    let address = format!("127.0.0.1:{}", configuration.application_port);
+    let listener = TcpListener::bind(address).expect("failed to bind a port");
+    run(listener, connection)?.await
 }
