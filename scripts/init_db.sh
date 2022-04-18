@@ -28,7 +28,7 @@ then
     postgres -N 1000
 fi
 
-export PG_HOST="$(/sbin/ip route|awk '/default/ { print $3 }')"
+export PG_HOST=host.docker.internal
 export PGPASSWORD="${DB_PASSWORD}"
 until psql -h "${PG_HOST}" -U "${DB_USER}" -p "${DB_PORT}" -d "postgres" -c '\q'; do
     >&2 echo "Postgres is still unavailable - sleeping"
